@@ -1,7 +1,3 @@
-# hypriot_deployment
-Collection of bits to deploy hypriot on 5 node RPI Model B+ cluster.
-adding root folder
-lines
 [ '|-- src',
   '    |-- LICENSE',
   '    |-- README.md',
