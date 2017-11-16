@@ -175,56 +175,12 @@ runcmd:
   - [ bash, -ex, /tmp/install-consul.sh ]
   - [ bash, -ex, /tmp/install-vault.sh ]
 
-# Currently do not work on RPI Model B
-#  - [ bash, -ex, /tmp/install-flannel.sh ]
-#  - [ bash, -ex, /tmp/install-docker-volume-netshare.sh ]
-  
   # Pickup the hostname changes
   - [ systemctl, restart, avahi-daemon ]
   
-  # Start NFS/Docker-Volume-Netshare
-#  - [ systemctl, restart, nfs-kernel-server ]
-#  - [ systemctl, restart, docker-volume-netshare ]
-
   # Pickup the daemon.json changes
   - [ systemctl, restart, docker ]
-
-  
-  # Init a swarm, because why not
-  - [docker, swarm, init ]
-
 
   # Add apt sources for kubernetes
   - /usr/bin/curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | /usr/bin/apt-key add -
   - /bin/echo deb http://apt.kubernetes.io/ kubernetes-xenial main > /etc/apt/sources.list.d/kubernetes.list
-  
-  # Run portainer, so we can see our logs and control stuff from a UI
-  - [
-      docker, service, create, 
-      "--detach=false", 
-      "--name", "portainer", 
-      "--publish", "9000:9000", 
-      "--mount", "type=volume,src=portainer_data,dst=/data", 
-      "--mount", "type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock", 
-      "portainer/portainer", "-H", "unix:///var/run/docker.sock", "--no-auth"
-    ]
-
-  # Create a specific directory to store all the data, this way you could mount an external drive later (coming soon!)
-#  - [mkdir, "-p", "/var/cloud/data" ]
-
-  # This gives the nextcloud permissions to write to this directory since it runs as www-data
-#  - [setfacl, "-m", "u:www-data:rwx", "/var/cloud/data" ]
-
-  # Create the nextcloud instance configuring it on startup - you should change the user/password below to something less obvious or use the config UI
-#  - [
-#      docker, service, create, 
-#      "--detach=false", 
-#      "--name", "nextcloud", 
-#      "--publish", "80:80", 
-#      "--mount", "type=volume,src=nextcloud,dst=/var/www/html", 
-#      "--mount", "type=bind,src=//var/cloud/data,dst=/var/www/html/data", 
-#      "--env", "SQLITE_DATABASE=nextcloud", 
-#      "--env", "NEXTCLOUD_ADMIN_USER=pirate", 
-#      "--env", "NEXTCLOUD_ADMIN_PASSWORD=hypriot", 
-#      "nextcloud:latest" 
-#    ]
