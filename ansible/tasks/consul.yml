@@ -1,0 +1,13 @@
+- name: Add folders for Consul
+  hosts: rpi-mb2
+  sudo: True
+  vars:
+  tasks:
+    - name: Create Consul Directories
+      file: 'path="{{ item }}" state=directory'
+      with_items:
+        - "/etc/consul.d"
+    - name: Test Consul with path
+      shell: '/opt/bin/consul --version'
+
+

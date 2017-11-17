@@ -3,6 +3,10 @@ ansible_connection=ssh
 #ansible_private_key_File=/root/id_rsa
 ansible_ssh_user=pirate
 ansible_ssh_pass=hypriot
+become_method=sudo
+become_user=root
+ansible_become_user=root
+extrapath="$PATH:/opt/bin"
 
 [rpi-mb2]
 bp0
@@ -10,6 +14,7 @@ bp1
 bp2
 bp3
 bp4
+
 
 #[pinet-cluster-b:vars]]
 #ansible_user=pirate
