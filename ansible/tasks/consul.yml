@@ -1,13 +1,44 @@
+#! /usr/bin/env ansible-playbook
+---
 - name: Add folders for Consul
   hosts: rpi-mb2
   sudo: True
   vars:
+  environment:
+    path: "{{ ansible_env.PATH }}:/opt/bin"
   tasks:
     - name: Create Consul Directories
       file: 'path="{{ item }}" state=directory'
       with_items:
         - "/etc/consul.d"
+        - "/var/consul"
+        - "/etc/vault.d"
+        - "/var/vault"
+
+    - name: Verify consul and vault are in /usr/local/bin
+      file: 
+        path: "{{ item }}"
+        state: file
+        owner: root
+        group: users
+        mode: '0755'
+      with_items:
+        - "/usr/local/bin/consul"
+        - "/usr/local/bin/vault"
+
     - name: Test Consul with path
-      shell: '/opt/bin/consul --version'
+      shell: consul --version && vault --version
 
-
+    - name: add cluster system users
+      user:
+        name: "{{ item }}"
+        state: present
+        groups: nogroup
+      with_items:
+        - consul
+        - vault
+    - name: check consul
+      action: command "{{ item }}" --version
+      with_items:
+        - consul
+        - vault

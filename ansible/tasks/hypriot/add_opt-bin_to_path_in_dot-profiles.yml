@@ -1,9 +1,13 @@
+#! /usr/bin/env ansible-playbook
+---
 - name: Add /opt/bin to path in "{{ item }}"/.profile
   hosts: rpi-mb2
   sudo: True
   vars:
+    path: "/opt/bin:$PATH"
   tasks:
-  - blockinfile: 
+  - name: Add /opt/bin to .profiles
+    blockinfile: 
       path: "{{ item }}"
       insertbefore: 'mesg n'
       content: |
@@ -16,11 +20,5 @@
         - /etc/skel/.profile
         - /root/.profile
         - /home/pirate/.profile
-  - lineinfile: 
-       path: "{{ item }}"
-       line: ' # set PATH so it includes /opt/bin if it exists if [ -d "/opt/bin" ] ; then PATH="/opt/bin:$PATH" export PATH fi'
-       state: absent
-    with_items:
-       - /etc/skel/.profile
-       - /root/.profile
-       - /home/pirate/.profile
+  - name: Echo the Path
+    action: command "echo $PATH"
